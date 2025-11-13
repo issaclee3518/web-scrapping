@@ -1,29 +1,25 @@
 import requests
 from bs4 import BeautifulSoup
-url = "https://www.google.com"
-
+url = "https://news.naver.com/section/100"
 response = requests.get(url)
-html='''
-<nav class="navbar">
-    <div class="container">
-        <a href="/" class="navbar-brand">My Website</a>
-    </div>
-</nav>
-<main>
-    <h1>Welcome to my website</h1>
-    <div>This is a simple website built with HTML and CSS.</div>
-    <a href="https://www.google.com">Google</a>
-</main>
-<footer>
-    <div>Copyright 2025 My Website</div>
-</footer>
-'''
-bs = BeautifulSoup(html,"html.parser")
-print(response.status_code)
+if response.status_code == 200:
+    bs = BeautifulSoup(response.text, "html.parser")
+    print(bs.get_text())
+else:
+    print("Failed to fetch the page")
 
-div_tags = bs.select('div')
-print(div_tags)
-for div_tag in div_tags:
-    print(div_tag.get_text())
+news_title = bs.find_all('strong', class_="sa_text_strong")
+
+for idx, title in enumerate(news_title):
+    print(idx, title.get_text())
+
+search_keyword = "장동혁"
+keyword_news_list = []
+
+for keyword_news in news_title:
+    if search_keyword in keyword_news.get_text():
+        keyword_news_list.append(keyword_news.get_text())
 print("--------------------------------")
-print(bs)
+print(f"{search_keyword} 관련 뉴스 제목:")
+for idx, keyword_news in enumerate(keyword_news_list):
+    print(idx+1, keyword_news)
